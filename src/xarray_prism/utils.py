@@ -30,9 +30,7 @@ STORAGE_OPTIONS_TO_GDAL: Dict[str, str] = {
 class ProgressBar:
     """Progress bar to display cache download progress."""
 
-    def __init__(
-        self, desc: str = "Downloading", width: int = 40, lines_above: int = 0
-    ):
+    def __init__(self, desc: str = "Downloading", width: int = 40):
         self.desc = desc
         self.width = width
         self._total = 0
@@ -40,7 +38,6 @@ class ProgressBar:
         self._spinner = 0
         self._spinner_chars = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
         self._last_line_len = 0
-        self._lines_above = lines_above
 
     def set_size(self, size: int) -> None:
         self._total = size if size else 0
@@ -74,12 +71,6 @@ class ProgressBar:
     def __exit__(self, *args):
         # Clear the progress line
         sys.stdout.write("\r" + " " * self._last_line_len + "\r")
-
-        # Clear detection + warning messages
-        for _ in range(self._lines_above):
-            sys.stdout.write("\033[A")
-            sys.stdout.write("\033[K")
-
         sys.stdout.flush()
 
 

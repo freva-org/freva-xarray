@@ -102,21 +102,17 @@ class PrismBackendEntrypoint(BackendEntrypoint):
             )
 
         uri = str(filename_or_obj)
-
         is_remote = "://" in uri and not uri.startswith("file://")
-        lines_printed = 0
 
-        if is_remote:
-            logger.info("Detecting format...")
-            sys.stdout.flush()
+        uri_type = detect_uri_type(uri)
+        if uri_type == "posix":
+            posix_path = uri[7:] if uri.startswith("file://") else uri
+            if not os.path.exists(posix_path):
+                raise FileNotFoundError(f"Xarray Prism: file not found: {uri!r}")
 
+        logger.debug("Detecting format for %s", uri)
         engine, uri_type = self._detect(uri, **kwargs)
-
-        if is_remote and engine:
-            logger.info(f"Detected: {engine}")
-            lines_printed = 1
-            sys.stdout.write("\r" + " " * 25 + "\r")
-            sys.stdout.flush()
+        logger.debug("Detected engine=%s uri_type=%s", engine, uri_type)
 
         if engine is None:
             if is_remote:
@@ -187,7 +183,6 @@ class PrismBackendEntrypoint(BackendEntrypoint):
                 engine=engine,
                 drop_variables=drop_variables,
                 backend_kwargs=backend_kwargs,
-                lines_above=lines_printed,
                 **kwargs,
             )
         else:

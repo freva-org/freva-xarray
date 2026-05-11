@@ -3,6 +3,7 @@ with a specified engine."""
 
 from __future__ import annotations
 
+import os
 from typing import Any, Dict, Optional
 
 
@@ -15,6 +16,20 @@ def open_posix(
 ) -> Any:
     """Open local file with detected engine."""
     import xarray as xr
+
+    # the following posix backends don't accept storage_options
+    _NO_STORAGE_OPTIONS = frozenset({"cfgrib", "scipy", "netcdf4", "rasterio"})
+    if engine in _NO_STORAGE_OPTIONS:
+        kwargs.pop("storage_options", None)
+
+    if engine == "cfgrib":
+        from .._cache import get_cache_dir
+
+        bk = dict(backend_kwargs or {})
+        if "indexpath" not in bk:
+            basename = os.path.basename(uri)
+            bk["indexpath"] = str(get_cache_dir() / f"{basename}.{{short_hash}}.idx")
+        backend_kwargs = bk
 
     if engine == "rasterio":
         from ..utils import sanitize_rasterio_kwargs

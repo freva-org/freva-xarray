@@ -176,6 +176,20 @@ xp.clear_cache(max_age_days=0, max_size_gb=0)
 > | TTL (last-access) | 7 days | `XARRAY_PRISM_MAX_AGE_DAYS=N` |
 > | Size cap (LRU) | 10 GB | `XARRAY_PRISM_MAX_SIZE_GB=N` |
 
+### Logging
+
+By default xarray-prism is silent (`WARNING` level). Set `XARRAY_PRISM_LOG_LEVEL` to change verbosity:
+
+```bash
+# Show detection and open steps
+XARRAY_PRISM_LOG_LEVEL=DEBUG python my_script.py
+
+# Suppress everything except errors
+XARRAY_PRISM_LOG_LEVEL=ERROR python my_script.py
+```
+
+Accepted values: `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`.
+
 
 ## Customization
 
