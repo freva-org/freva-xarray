@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import logging
 import os
-import sys
 import tempfile
 import time
 from hashlib import md5
@@ -46,7 +45,6 @@ def cache_remote_file(
     engine: str,
     storage_options: Optional[Dict] = None,
     show_progress: bool = True,
-    lines_above: int = 0,
 ) -> str:
     """Cache remote file to local."""
     import fsspec
@@ -60,18 +58,11 @@ def cache_remote_file(
     local_path = cache_root / cache_name
 
     if local_path.exists():
-        if show_progress and lines_above > 0:
-            for _ in range(lines_above):
-                sys.stdout.write("\033[A")
-                sys.stdout.write("\033[K")
-            sys.stdout.flush()
         return _decompress_if_needed(str(local_path))
 
-    extra_lines = 0
     if show_progress:
         fmt = "GRIB" if engine == "cfgrib" else "NetCDF3"
         logger.warning(f"Remote {fmt} requires full file download")
-        extra_lines = 2
 
     fs, path = fsspec.core.url_to_fs(
         uri, **_strip_chaining_options(storage_options or {})
@@ -89,7 +80,7 @@ def cache_remote_file(
             display_name = display_name[:32] + "..."
         desc = f" Downloading {display_name}"
 
-        with ProgressBar(desc=desc, lines_above=lines_above + extra_lines) as progress:
+        with ProgressBar(desc=desc) as progress:
             progress.set_size(size)
             with fs.open(path, "rb") as src, open(local_path, "wb") as dst:
                 while True:
