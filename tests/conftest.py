@@ -122,6 +122,14 @@ def sample_cordex_path(data_dir: Path) -> Path:
         / "pr_EUR-11_NCC-NorESM1-M_rcp85_r1i1p1_GERICS-REMO2015_v2_3hr_200701020130-200701020430.nc"
     )
 
+@pytest.fixture
+def sample_incoherent_encoding_path(data_dir: Path) -> Path:
+    """Return path to a incoherent NetCDF file."""
+    return (
+        data_dir
+        / "misc/diff_missing_fill.nc"
+    )
+
 
 def pytest_configure(config):
     """Register custom markers."""
