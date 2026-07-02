@@ -224,9 +224,12 @@ class TestXarrayIntegration:
     @pytest.mark.required_data
     def test_not_decoding(self, sample_incoherent_encoding_path: Path):
         import warnings
+
         with warnings.catch_warnings():
             warnings.simplefilter("error")
-            ds = xr.open_dataset(str(sample_incoherent_encoding_path), engine="prism", decode_cf=False)
+            ds = xr.open_dataset(
+                str(sample_incoherent_encoding_path), engine="prism", decode_cf=False
+            )
             assert isinstance(ds, xr.Dataset)
             ds.close()
 
