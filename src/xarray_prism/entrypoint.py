@@ -76,7 +76,19 @@ class PrismBackendEntrypoint(BackendEntrypoint):
     )
 
     url = "https://github.com/freva-org/xarray-prism"
-    open_dataset_parameters = ("filename_or_obj", "drop_variables", "storage_options")
+
+    # Everything Prism forwards to the underlying engine
+    open_dataset_parameters = (
+        "filename_or_obj",
+        "drop_variables",
+        "storage_options",
+        "mask_and_scale",
+        "decode_times",
+        "decode_timedelta",
+        "concat_characters",
+        "use_cftime",
+        "decode_coords",
+    )
 
     ENGINE_MAP: Dict[str, str] = {
         "zarr": "zarr",
@@ -153,6 +165,13 @@ class PrismBackendEntrypoint(BackendEntrypoint):
         # Pop prism-specific kwargs
         kwargs.pop("xarray_engine", None)
         backend_kwargs = kwargs.pop("backend_kwargs", None) or {}
+
+        # flatten backend_kwargs and expand a decode_cf that arrived through
+        # it
+        from ._delegate import normalize_open_kwargs
+
+        kwargs = normalize_open_kwargs(kwargs, backend_kwargs)
+        backend_kwargs = {}
 
         # Check custom registry first (handles custom uri_types too)
         custom_handler = registry.get(engine, uri_type)

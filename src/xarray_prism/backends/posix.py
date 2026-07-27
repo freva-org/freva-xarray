@@ -15,7 +15,7 @@ def open_posix(
     **kwargs,
 ) -> Any:
     """Open local file with detected engine."""
-    import xarray as xr
+    from .._delegate import open_with_engine
 
     # the following posix backends don't accept storage_options
     _NO_STORAGE_OPTIONS = frozenset({"cfgrib", "scipy", "netcdf4", "rasterio"})
@@ -35,7 +35,7 @@ def open_posix(
         from ..utils import sanitize_rasterio_kwargs
 
         kwargs = sanitize_rasterio_kwargs(kwargs)
-    ds = xr.open_dataset(
+    ds = open_with_engine(
         uri,
         engine=engine,
         drop_variables=drop_variables,
