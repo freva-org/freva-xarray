@@ -19,8 +19,7 @@ def open_cloud(
     **kwargs,
 ) -> Any:
     """Open remote file with detected engine."""
-    import xarray as xr
-
+    from .._delegate import open_with_engine
     from ..utils import gdal_env
 
     storage_options = kwargs.pop("storage_options", None)
@@ -30,7 +29,7 @@ def open_cloud(
     # GRIB / NetCDF3: must download the full file first
     if engine in ("cfgrib", "scipy"):
         local_path = cache_remote_file(uri, engine, storage_options, show_progress)
-        return xr.open_dataset(
+        return open_with_engine(
             local_path,
             engine=engine,
             drop_variables=drop_variables,
@@ -40,7 +39,7 @@ def open_cloud(
 
     # NetCDF4 (OPeNDAP)
     if engine == "netcdf4":
-        return xr.open_dataset(
+        return open_with_engine(
             uri,
             engine=engine,
             drop_variables=drop_variables,
@@ -53,7 +52,7 @@ def open_cloud(
         from ..utils import sanitize_rasterio_kwargs
 
         with gdal_env(storage_options):
-            return xr.open_dataset(
+            return open_with_engine(
                 uri,
                 engine=engine,
                 drop_variables=drop_variables,
@@ -62,7 +61,7 @@ def open_cloud(
             )
 
     # Zarr, h5netcdf
-    ds = xr.open_dataset(
+    ds = open_with_engine(
         uri,
         engine=engine,
         drop_variables=drop_variables,

@@ -1,6 +1,16 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+
+## [v2607.0.0]
+### Fixed
+- `decode_cf`, `cache` and `create_default_indexes` were silently ignored
+- `backend_kwargs={"decode_cf": False}` disagreed with `decode_cf=False` on GeoTIFFs
+- `backend_kwargs` is now flattened before engine-specific sanitizing
+- `decode_times` and `decode_timedelta` no longer dropped for rasterio since rioxarray accepts them
+### Changed
+- `open_posix()`, `open_cloud()` and `PrismBackendEntrypoint.open_dataset()` now return a raw backend dataset
+
 ## [v2605.0.0]
 ## Fixed
 - `FileNotFoundError` for missing local files instead of misleading "cannot detect format"
