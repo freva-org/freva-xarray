@@ -130,6 +130,12 @@ def sample_cordex_path(data_dir: Path) -> Path:
     )
 
 
+@pytest.fixture
+def sample_incoherent_encoding_path(data_dir: Path) -> Path:
+    """Return path to a incoherent NetCDF file."""
+    return data_dir / "misc/diff_missing_fill.nc"
+
+
 def pytest_configure(config):
     """Register custom markers."""
     config.addinivalue_line(
